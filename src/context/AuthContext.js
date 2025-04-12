@@ -1,49 +1,48 @@
+// context/AuthContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const setAuthToken = (token) => {
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    } else {
+      delete axios.defaults.headers.common['Authorization'];
+    }
+  };
 
   useEffect(() => {
     const user = localStorage.getItem('user');
-    if (user) {
-      try {
-        setCurrentUser(JSON.parse(user));
-      } catch (e) {
-        console.error("Failed to parse user data:", e);
-        localStorage.removeItem('user');
-      }
+    const token = localStorage.getItem('token');
+    if (user && token) {
+      setCurrentUser(JSON.parse(user));
+      setAuthToken(token);
     }
     setLoading(false);
   }, []);
 
   const login = async (username, password) => {
     try {
-      setError(null);
+      
       const response = await axios.post('http://localhost:3000/auth/login', {
         username,
         password
       });
       
-      if (!response.data || !response.data.user) {
-        throw new Error('Invalid response from server');
-      }
-
-      const user = response.data.user;
+      
+      const user = response.data;
       localStorage.setItem('user', JSON.stringify(user));
       setCurrentUser(user);
-      
       return user;
     } catch (error) {
-      setError(error.response?.data?.message || error.message || 'Login failed');
       throw error;
     }
   };
+
   const register = async (userData) => {
     try {
       const response = await axios.post('http://localhost:3000/auth/signup', userData);

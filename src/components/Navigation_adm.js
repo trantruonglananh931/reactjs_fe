@@ -13,13 +13,19 @@ const Navigation = () => {
           {/* Left side - Logo and menu items */}
           <div className="flex items-center space-x-4">
             <Link to="/" className="text-xl font-bold text-indigo-600">
-              USER
+              ADMIN
             </Link>
             <Link to="/products" className="text-gray-700 hover:text-indigo-600">
               Products
             </Link>
-            <Link to="/pricing" className="text-gray-700 hover:text-indigo-600">
+            <Link to="/categorys" className="text-gray-700 hover:text-indigo-600">
               Category
+            </Link>
+            <Link to="/roles" className="text-gray-700 hover:text-indigo-600">
+            Roles
+            </Link>
+            <Link to="/users" className="text-gray-700 hover:text-indigo-600">
+            Users
             </Link>
           </div>
           

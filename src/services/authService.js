@@ -1,7 +1,8 @@
 import axios from 'axios';
-import { API_URL } from '../utils/constants';
+import { API_URL } from '../constants';
 
 export const login = async (username, password) => {
+  
   const response = await axios.post(`${API_URL}/auth/login`, { username, password });
   return response.data;
 };

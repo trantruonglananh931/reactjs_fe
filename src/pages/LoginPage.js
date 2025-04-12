@@ -1,5 +1,4 @@
-// pages/LoginPage.js
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Navigation from '../components/Navigation';
@@ -18,12 +17,19 @@ function LoginPage() {
     try {
       setError('');
       setLoading(true);
-      await login(username, password);
-      navigate('/');
+      const user = await login(username, password);
+      
+      // Chuyển hướng theo role
+      if (user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
-      setError('Invalid username or password');
+      setError(err.message || 'Invalid username or password');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
