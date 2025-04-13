@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { createProduct, getProductById, updateProduct } from '../../services/api';
-import Navigation_adm from '../Navigation_adm';
+import { createProduct, getProductById, updateProduct } from '../../services/productApi.js';
+
 const ProductForm = ({ isEdit = false }) => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -12,18 +12,17 @@ const ProductForm = ({ isEdit = false }) => {
     quantity: '',
     description: '',
     category: '',
-    imgURL: ''
+    image: null 
   });
+  const [preview, setPreview] = useState(null); // preview ảnh
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // In a real app, you would fetch categories from your backend
   useEffect(() => {
-    // Mock categories - replace with actual API call
     setCategories([
-      { _id: '1', name: 'Electronics' },
-      { _id: '2', name: 'Clothing' },
-      { _id: '3', name: 'Books' },
+      { _id: '67ee2fc3203bde617c4b12a2', name: 'Iphone' },
+      { _id: '67ee2fd2203bde617c4b12a4', name: 'Samsung xịn' },
+      
     ]);
 
     if (isEdit && id) {
@@ -38,7 +37,7 @@ const ProductForm = ({ isEdit = false }) => {
             quantity: product.quantity,
             description: product.description || '',
             category: product.category?.name || '',
-            imgURL: product.imgURL || ''
+            image: null 
           });
           setLoading(false);
         } catch (err) {
@@ -59,43 +58,54 @@ const ProductForm = ({ isEdit = false }) => {
   };
 
   const handleImageChange = (e) => {
-    setFormData({ ...formData, image: e.target.files[0] });
+    const file = e.target.files[0];
+    setFormData({ ...formData, image: file });
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setPreview(null);
+    }
   };
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const token = localStorage.getItem('token'); // Get token from storage
+      const token = localStorage.getItem('token');
       if (!token) throw new Error('Authentication required');
-
-      const productData = {
-        name: formData.name,
-        price: formData.price,
-        quantity: formData.quantity,
-        description: formData.description,
-        category: formData.category,
-        imgURL: formData.imgURL
-      };
-
-      if (isEdit) {
-        await updateProduct(id, productData, token);
-      } else {
-        await createProduct(productData, token);
+      const data = new FormData();
+      data.append('name', formData.name);
+      data.append('price', formData.price);
+      data.append('quantity', formData.quantity);
+      data.append('description', formData.description);
+      data.append('category', formData.category);
+      if (formData.image) {
+        data.append('imgUrl', formData.image); 
       }
-      navigate('/products');
+  
+      if (isEdit) {
+        await updateProduct(id, data, token); 
+      } else {
+        await createProduct(data, token);
+      }
+  
+      navigate('/aproducts');
     } catch (err) {
       setError(err.message);
       setLoading(false);
     }
   };
+  
 
   if (loading) return <div>Loading...</div>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <Navigation_adm />
       <div className="product-form bg-white rounded-sm shadow-md m-4 p-6 max-w-2xl mx-auto">
         <h1 className="text-2xl font-bold mb-6">
           {isEdit ? 'Edit Product' : 'Add New Product'}
@@ -176,21 +186,26 @@ const ProductForm = ({ isEdit = false }) => {
             </div>
 
             <div>
-  <label className="block text-gray-700 mb-2">Tải ảnh lên</label>
-      <input
-        type="file"
-        name="image"
-        accept="image/*"
-        onChange={handleImageChange}
-        className="w-full px-4 py-2 border rounded-sm"
-      />
-    </div>
-
+              <label className="block text-gray-700 mb-2">Tải ảnh lên</label>
+              <input
+                type="file"
+                name="image"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="w-full px-4 py-2 border rounded-sm"
+              />
+              {/* Hiển thị preview nếu có */}
+              {preview && (
+                <div className="mt-4">
+                  <img src={preview} alt="Preview" className="w-48 h-auto rounded border" />
+                </div>
+              )}
+            </div>
 
             <div className="flex justify-end gap-4">
               <button
                 type="submit"
-                className="bg-blue-600 text-white px-4 py-2 rounded-sm rounded hover:bg-blue-700"
+                className="bg-blue-600 text-white px-4 py-2 rounded-sm hover:bg-blue-700"
               >
                 {isEdit ? 'Update' : 'Add Product'}
               </button>

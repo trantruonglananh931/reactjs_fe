@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getRoleById, deleteRole } from '../../services/roleApi';
 import { toast } from 'react-toastify';
-import Navigation_adm from '../Navigation_adm';
 const RoleDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -45,7 +44,6 @@ const RoleDetail = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <Navigation_adm />
       <div className="container mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-md p-6 max-w-3xl mx-auto">
           <div className="flex justify-between items-start mb-6">

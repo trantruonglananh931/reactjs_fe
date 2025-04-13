@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getRoles, deleteRole } from '../../services/roleApi';
 import { toast } from 'react-toastify';
-import Navigation_adm from '../Navigation_adm';
 const RoleList = () => {
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -52,29 +51,14 @@ const RoleList = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <Navigation_adm />
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Role Management</h1>
           <Link
             to="/roles/new"
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
           >
             Add New Role
           </Link>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Search by Name</label>
-            <input
-              type="text"
-              placeholder="Role name..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 border rounded-md"
-            />
-          </div>
         </div>
 
         {roles.length === 0 ? (

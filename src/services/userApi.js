@@ -4,9 +4,6 @@ const API_URL = 'http://localhost:3000/users';
 
 const api = axios.create({
   baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  }
 });
 
 api.interceptors.request.use((config) => {
@@ -39,7 +36,12 @@ export const getUserById = async (id) => {
 
 export const createUser = async (userData) => {
   try {
-    const response = await api.post('/', userData);
+    const formData = new FormData();
+    for (const key in userData) {
+      formData.append(key, userData[key]);
+    }
+
+    const response = await api.post('/', formData);
     return response.data;
   } catch (error) {
     console.error('Error creating user:', error);
@@ -49,7 +51,12 @@ export const createUser = async (userData) => {
 
 export const updateUser = async (id, userData) => {
   try {
-    const response = await api.put(`/${id}`, userData);
+    const formData = new FormData();
+    for (const key in userData) {
+      formData.append(key, userData[key]);
+    }
+
+    const response = await api.put(`/${id}`, formData);
     return response.data;
   } catch (error) {
     console.error('Error updating user:', error);
@@ -67,12 +74,3 @@ export const deleteUser = async (id) => {
   }
 };
 
-export const login = async (credentials) => {
-  try {
-    const response = await axios.post(`${API_URL}/login`, credentials);
-    return response.data;
-  } catch (error) {
-    console.error('Error logging in:', error);
-    throw error;
-  }
-};

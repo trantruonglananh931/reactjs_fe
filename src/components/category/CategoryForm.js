@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { createCategory, getCategoryById, updateCategory } from '../../services/categoryApi';
 import { toast } from 'react-toastify';
-import Navigation_adm from '../Navigation_adm';
 const CategoryForm = ({ isEdit = false }) => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -77,7 +76,6 @@ const CategoryForm = ({ isEdit = false }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <Navigation_adm />
       <div className="container mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-md p-6 max-w-3xl mx-auto">
           <h1 className="text-2xl font-bold mb-6">

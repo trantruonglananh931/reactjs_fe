@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getCategoryById, deleteCategory } from '../../services/categoryApi';
 import { toast } from 'react-toastify';
-import Navigation_adm from '../Navigation_adm';
 import {
   PencilSquareIcon,
   TrashIcon,
@@ -49,9 +48,8 @@ const CategoryDetail = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <Navigation_adm />
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6 max-w-3xl mx-auto">
+      <div className="container rounded-sm mx-auto px-4 py-8">
+        <div className="bg-white rounded-sm shadow-md p-6 max-w-3xl mx-auto">
           <div className="flex justify-between items-start mb-6">
             <h1 className="text-2xl font-bold text-gray-900">{category.name}</h1>
             <span className="text-sm text-gray-500">Slug: {category.slug}</span>
@@ -62,23 +60,6 @@ const CategoryDetail = () => {
             <p className="text-gray-600">
               {category.description || 'No description available.'}
             </p>
-          </div>
-
-          <div className="flex space-x-3">
-            <button
-              onClick={() => navigate(`/categories/edit/${category._id}`)}
-              className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center gap-2"
-            >
-              <PencilSquareIcon className="h-5 w-5" />
-              
-            </button>
-            <button
-              onClick={handleDelete}
-              className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded flex items-center gap-2"
-            >
-              <TrashIcon className="h-5 w-5" />
-              
-            </button>
           </div>
 
         </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getUserById, deleteUser } from '../../services/userApi';
 import { toast } from 'react-toastify';
-import Navigation_adm from '../Navigation_adm';
+
 const UserDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -45,69 +45,45 @@ const UserDetail = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <Navigation_adm />
       <div className="container mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6 max-w-3xl mx-auto">
+        <div className="bg-white rounded-sm shadow-xl p-6 max-w-4xl mx-auto">
+          {/* Avatar and User Info */}
           <div className="flex items-center space-x-6 mb-6">
             {user.avatarUrl ? (
-              <img className="h-24 w-24 rounded-full" src={user.avatarUrl} alt="User avatar" />
+              <img className="h-28 w-28 rounded-full border-2 border-gray-300" src={`http://localhost:3000/${user.avatarUrl}`} alt="User avatar" />
             ) : (
-              <div className="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center text-4xl text-gray-500">
+              <div className="h-28 w-28 rounded-full bg-gray-200 flex items-center justify-center text-4xl text-gray-600">
                 {user.username.charAt(0).toUpperCase()}
               </div>
             )}
             <div>
-              <h1 className="text-2xl font-bold">{user.fullName}</h1>
-              <p className="text-gray-600">@{user.username}</p>
-              <span className={`mt-2 inline-block px-3 py-1 text-xs rounded-full ${user.isDeleted ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+              <h1 className="text-3xl font-semibold text-gray-800">{user.fullName}</h1>
+              <p className="text-lg text-gray-600">@{user.username}</p>
+              <span className={`mt-2 inline-block px-4 py-2 text-xs rounded-full ${user.isDeleted ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                 {user.isDeleted ? 'Deleted' : 'Active'}
               </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          {/* Contact and Account Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
             <div>
-              <h2 className="text-lg font-medium text-gray-900 mb-2">Contact Information</h2>
-              <div className="space-y-2">
-                <p><span className="font-medium">Email:</span> {user.email || 'N/A'}</p>
-                <p><span className="font-medium">Phone:</span> {user.phone}</p>
-                <p><span className="font-medium">Address:</span> {user.address}</p>
+              <h2 className="text-xl font-medium text-gray-900 mb-3">Contact Information</h2>
+              <div className="space-y-2 text-gray-700">
+                <p><span className="font-semibold">Email:</span> {user.email || 'N/A'}</p>
+                <p><span className="font-semibold">Phone:</span> {user.phone || 'N/A'}</p>
+                <p><span className="font-semibold">Address:</span> {user.address || 'N/A'}</p>
               </div>
             </div>
 
             <div>
-              <h2 className="text-lg font-medium text-gray-900 mb-2">Account Information</h2>
-              <div className="space-y-2">
-                <p><span className="font-medium">Role:</span> {user.role?.name || 'N/A'}</p>
-                <p><span className="font-medium">Status:</span> {user.status ? 'Active' : 'Inactive'}</p>
-                <p><span className="font-medium">Login Count:</span> {user.loginCount}</p>
+              <h2 className="text-xl font-medium text-gray-900 mb-3">Account Information</h2>
+              <div className="space-y-2 text-gray-700">
+                <p><span className="font-semibold">Role:</span> {user.role?.name || 'N/A'}</p>
+                <p><span className="font-semibold">Status:</span> {user.status ? 'Active' : 'Inactive'}</p>
+                <p><span className="font-semibold">Login Count:</span> {user.loginCount || 0}</p>
               </div>
             </div>
-          </div>
-
-          <div className="flex space-x-3">
-            {!user.isDeleted && (
-              <>
-                <button
-                  onClick={() => navigate(`/users/edit/${user._id}`)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded"
-                >
-                  Delete User
-                </button>
-              </>
-            )}
-            <button
-              onClick={() => navigate('/users')}
-              className="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded"
-            >
-              Back to Users
-            </button>
           </div>
         </div>
       </div>

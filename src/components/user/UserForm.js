@@ -3,12 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getRoles } from '../../services/roleApi';
 import { createUser, getUserById, updateUser } from '../../services/userApi';
 import { toast } from 'react-toastify';
-import Navigation_adm from '../Navigation_adm';
 
 const UserForm = ({ isEdit = false }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [roles, setRoles] = useState([]);
+  const [avatarFile, setAvatarFile] = useState(null);
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -35,7 +35,7 @@ const UserForm = ({ isEdit = false }) => {
           const user = userResponse.data;
           setFormData({
             username: user.username,
-            password: '', // Don't pre-fill password
+            password: '', 
             email: user.email,
             fullName: user.fullName,
             phone: user.phone,
@@ -64,34 +64,50 @@ const UserForm = ({ isEdit = false }) => {
     });
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAvatarFile(file);  
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prevData) => ({
+          ...prevData,
+          avatarUrl: reader.result
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+  
     try {
-
       if (!formData.username.trim()) throw new Error('Username is required');
       if (!isEdit && !formData.password) throw new Error('Password is required');
       if (!formData.fullName.trim()) throw new Error('Full name is required');
       if (!formData.phone.trim()) throw new Error('Phone is required');
       if (!formData.address.trim()) throw new Error('Address is required');
       if (!formData.role) throw new Error('Role is required');
-
-      const userData = {
-        username: formData.username,
-        email: formData.email,
-        fullName: formData.fullName,
-        phone: formData.phone,
-        address: formData.address,
-        role: formData.role,
-        avatarUrl: formData.avatarUrl
-      };
-
-      // Only include password if it's not empty (for updates) or it's a new user
+  
+      const userData = new FormData();
+      userData.append('username', formData.username);
+      userData.append('email', formData.email);
+      userData.append('fullName', formData.fullName);
+      userData.append('phone', formData.phone);
+      userData.append('address', formData.address);
+      userData.append('role', formData.role);
+  
       if (formData.password) {
-        userData.password = formData.password;
+        userData.append('password', formData.password);
       }
-
+  
+      if (avatarFile) {
+        userData.append('avatarUrl', avatarFile);
+      }
+  
       if (isEdit) {
         await updateUser(id, userData);
         toast.success('User updated successfully');
@@ -99,7 +115,7 @@ const UserForm = ({ isEdit = false }) => {
         await createUser(userData);
         toast.success('User created successfully');
       }
-
+  
       navigate('/users');
     } catch (err) {
       setError(err.message);
@@ -107,15 +123,14 @@ const UserForm = ({ isEdit = false }) => {
       setLoading(false);
     }
   };
-
+  
   if (loading) return <div className="text-center py-8">Loading form...</div>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <Navigation_adm />
       <div className="container mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6 max-w-3xl mx-auto">
-          <h1 className="text-2xl font-bold mb-6">
+        <div className="bg-white rounded-sm shadow-md p-6 max-w-3xl mx-auto">
+          <h1 className="text-2xl font-bold mb-6 text-center">
             {isEdit ? 'Edit User' : 'Add New User'}
           </h1>
 
@@ -131,9 +146,9 @@ const UserForm = ({ isEdit = false }) => {
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   required
-                  disabled={isEdit} // Username shouldn't be changed after creation
+                  disabled={isEdit} 
                 />
               </div>
 
@@ -147,7 +162,7 @@ const UserForm = ({ isEdit = false }) => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   required={!isEdit}
                 />
               </div>
@@ -160,7 +175,7 @@ const UserForm = ({ isEdit = false }) => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
 
@@ -172,7 +187,7 @@ const UserForm = ({ isEdit = false }) => {
                   name="fullName"
                   value={formData.fullName}
                   onChange={handleChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
               </div>
@@ -185,7 +200,7 @@ const UserForm = ({ isEdit = false }) => {
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
               </div>
@@ -198,7 +213,7 @@ const UserForm = ({ isEdit = false }) => {
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
               </div>
@@ -210,7 +225,7 @@ const UserForm = ({ isEdit = false }) => {
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   required
                 >
                   <option value="">Select a role</option>
@@ -223,14 +238,14 @@ const UserForm = ({ isEdit = false }) => {
               </div>
 
               <div>
-                <label htmlFor="avatarUrl" className="block text-sm font-medium text-gray-700">Avatar URL</label>
+                <label htmlFor="avatarUrl" className="block text-sm font-medium text-gray-700">Avatar</label>
                 <input
-                  type="text"
+                  type="file"
                   id="avatarUrl"
                   name="avatarUrl"
-                  value={formData.avatarUrl}
-                  onChange={handleChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="mt-1 block w-full border border-gray-300 rounded-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 />
                 {formData.avatarUrl && (
                   <div className="mt-2">
@@ -243,7 +258,7 @@ const UserForm = ({ isEdit = false }) => {
             <div className="flex justify-end space-x-3">
               <button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded"
+                className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-sm"
                 disabled={loading}
               >
                 {isEdit ? 'Update' : 'Create'}
